@@ -1,12 +1,13 @@
 package com.bnote.global.rq;
 
 import com.bnote.domain.member.entity.Member;
+import com.bnote.domain.member.exception.MemberException;
 import com.bnote.domain.member.repository.MemberRepository;
-import com.bnote.global.exception.ServiceException;
-import java.util.Optional;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Component
 public class Rq {
@@ -22,10 +23,10 @@ public class Rq {
 	 */
 	public Long getActorId() {
 		return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
-			.map(Authentication::getPrincipal)
-			.filter(principal -> principal instanceof Long)
-			.map(principal -> (Long) principal)
-			.orElse(null);
+				.map(Authentication::getPrincipal)
+				.filter(principal -> principal instanceof Long)
+				.map(principal -> (Long) principal)
+				.orElse(null);
 	}
 
 	/**
@@ -34,13 +35,13 @@ public class Rq {
 	public Long getActorIdOrThrow() {
 		Long actorId = getActorId();
 		if (actorId == null) {
-			throw new ServiceException("401-1", "로그인이 필요합니다.");
+			throw MemberException.loginRequired();
 		}
 		return actorId;
 	}
 
 	public Member getActorFromDb() {
 		return memberRepository.findById(getActorIdOrThrow())
-			.orElseThrow(() -> new ServiceException("404-1", "회원을 찾을 수 없습니다."));
+				.orElseThrow(MemberException::notFound);
 	}
 }

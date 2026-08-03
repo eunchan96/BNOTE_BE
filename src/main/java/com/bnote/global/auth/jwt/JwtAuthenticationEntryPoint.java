@@ -1,6 +1,6 @@
 package com.bnote.global.auth.jwt;
 
-import com.bnote.global.rsData.RsData;
+import com.bnote.domain.member.exception.MemberException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
@@ -22,15 +22,15 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
 	@Override
 	public void commence(
-		HttpServletRequest request,
-		HttpServletResponse response,
-		AuthenticationException authException
+			HttpServletRequest request,
+			HttpServletResponse response,
+			AuthenticationException authException
 	) throws IOException {
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		response.setCharacterEncoding("UTF-8");
 		response.getWriter().write(
-			objectMapper.writeValueAsString(new RsData<Void>("401-1", "로그인이 필요합니다."))
+				objectMapper.writeValueAsString(MemberException.loginRequired().getRsData())
 		);
 	}
 }

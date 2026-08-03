@@ -1,15 +1,16 @@
 package com.bnote.global.auth.oauth;
 
 import com.bnote.domain.member.entity.SocialType;
-import com.bnote.global.exception.ServiceException;
+import com.bnote.domain.member.exception.MemberException;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
+
+import java.util.Map;
 
 @Component
 public class KakaoOAuthClient implements OAuthClient {
@@ -44,27 +45,27 @@ public class KakaoOAuthClient implements OAuthClient {
 		body.add("code", authCode);
 
 		KakaoTokenResponse response = restClient.post()
-			.uri(TOKEN_URI)
-			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-			.body(body)
-			.retrieve()
-			.body(KakaoTokenResponse.class);
+				.uri(TOKEN_URI)
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+				.body(body)
+				.retrieve()
+				.body(KakaoTokenResponse.class);
 
 		if (response == null || response.accessToken() == null) {
-			throw new ServiceException("400-1", "카카오 토큰 발급에 실패했습니다.");
+			throw MemberException.oauthFailed("카카오 토큰 발급에 실패했습니다.");
 		}
 		return response.accessToken();
 	}
 
 	private SocialUserInfo requestUserInfo(String kakaoAccessToken) {
 		Map<String, Object> response = restClient.get()
-			.uri(USER_INFO_URI)
-			.header("Authorization", "Bearer " + kakaoAccessToken)
-			.retrieve()
-			.body(Map.class);
+				.uri(USER_INFO_URI)
+				.header("Authorization", "Bearer " + kakaoAccessToken)
+				.retrieve()
+				.body(Map.class);
 
 		if (response == null) {
-			throw new ServiceException("400-1", "카카오 사용자 정보 조회에 실패했습니다.");
+			throw MemberException.oauthFailed("카카오 사용자 정보 조회에 실패했습니다.");
 		}
 
 		String socialId = String.valueOf(response.get("id"));
@@ -81,9 +82,9 @@ public class KakaoOAuthClient implements OAuthClient {
 	}
 
 	private record KakaoTokenResponse(
-		@JsonProperty("token_type") String tokenType,
-		@JsonProperty("access_token") String accessToken,
-		@JsonProperty("refresh_token") String refreshToken
+			@JsonProperty("token_type") String tokenType,
+			@JsonProperty("access_token") String accessToken,
+			@JsonProperty("refresh_token") String refreshToken
 	) {
 	}
 }

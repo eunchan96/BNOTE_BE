@@ -62,7 +62,7 @@ class MemberControllerTest {
 			.andExpect(handler().handlerType(MemberController.class))
 			.andExpect(handler().methodName("getMe"))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.resultCode").value("200-1"))
+			.andExpect(jsonPath("$.resultCode").value("200"))
 			.andExpect(jsonPath("$.data.id").value(member.getId()))
 			.andExpect(jsonPath("$.data.nickname").value("은찬"))
 			.andExpect(jsonPath("$.data.socialType").value("KAKAO"));
@@ -88,7 +88,7 @@ class MemberControllerTest {
 			.andExpect(handler().handlerType(MemberController.class))
 			.andExpect(handler().methodName("withdraw"))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.resultCode").value("200-1"));
+			.andExpect(jsonPath("$.resultCode").value("200"));
 
 		Assertions.assertThat(memberRepository.findById(member.getId())).isEmpty();
 	}

@@ -1,15 +1,16 @@
 package com.bnote.global.auth.oauth;
 
 import com.bnote.domain.member.entity.SocialType;
-import com.bnote.global.exception.ServiceException;
+import com.bnote.domain.member.exception.MemberException;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
+
+import java.util.Map;
 
 @Component
 public class GoogleOAuthClient implements OAuthClient {
@@ -48,27 +49,27 @@ public class GoogleOAuthClient implements OAuthClient {
 		body.add("code", authCode);
 
 		GoogleTokenResponse response = restClient.post()
-			.uri(TOKEN_URI)
-			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-			.body(body)
-			.retrieve()
-			.body(GoogleTokenResponse.class);
+				.uri(TOKEN_URI)
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+				.body(body)
+				.retrieve()
+				.body(GoogleTokenResponse.class);
 
 		if (response == null || response.accessToken() == null) {
-			throw new ServiceException("400-1", "구글 토큰 발급에 실패했습니다.");
+			throw MemberException.oauthFailed("구글 토큰 발급에 실패했습니다.");
 		}
 		return response.accessToken();
 	}
 
 	private SocialUserInfo requestUserInfo(String googleAccessToken) {
 		Map<String, Object> response = restClient.get()
-			.uri(USER_INFO_URI)
-			.header("Authorization", "Bearer " + googleAccessToken)
-			.retrieve()
-			.body(Map.class);
+				.uri(USER_INFO_URI)
+				.header("Authorization", "Bearer " + googleAccessToken)
+				.retrieve()
+				.body(Map.class);
 
 		if (response == null) {
-			throw new ServiceException("400-1", "구글 사용자 정보 조회에 실패했습니다.");
+			throw MemberException.oauthFailed("구글 사용자 정보 조회에 실패했습니다.");
 		}
 
 		String socialId = String.valueOf(response.get("sub"));
@@ -79,9 +80,9 @@ public class GoogleOAuthClient implements OAuthClient {
 	}
 
 	private record GoogleTokenResponse(
-		@JsonProperty("token_type") String tokenType,
-		@JsonProperty("access_token") String accessToken,
-		@JsonProperty("id_token") String idToken
+			@JsonProperty("token_type") String tokenType,
+			@JsonProperty("access_token") String accessToken,
+			@JsonProperty("id_token") String idToken
 	) {
 	}
 }

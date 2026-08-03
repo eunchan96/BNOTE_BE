@@ -1,15 +1,16 @@
 package com.bnote.global.auth.jwt;
 
-import com.bnote.global.exception.ServiceException;
+import com.bnote.domain.member.exception.MemberException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import java.util.Date;
-import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import javax.crypto.SecretKey;
+import java.util.Date;
 
 @Component
 public class JwtProvider {
@@ -69,9 +70,9 @@ public class JwtProvider {
 					.parseSignedClaims(token)
 					.getPayload();
 		} catch (ExpiredJwtException e) {
-			throw new ServiceException("401-3", "만료된 토큰입니다.");
+			throw MemberException.expiredToken();
 		} catch (JwtException | IllegalArgumentException e) {
-			throw new ServiceException("401-4", "유효하지 않은 토큰입니다.");
+			throw MemberException.invalidToken();
 		}
 	}
 }

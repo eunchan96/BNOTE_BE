@@ -3,7 +3,7 @@ package com.bnote.domain.member.controller;
 import com.bnote.domain.member.dto.response.MemberResponse;
 import com.bnote.domain.member.service.MemberService;
 import com.bnote.global.rq.Rq;
-import com.bnote.global.rsData.RsData;
+import com.bnote.global.response.RsData;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,12 +24,12 @@ public class MemberController {
 	@GetMapping("/me")
 	public RsData<MemberResponse> getMe() {
 		MemberResponse member = memberService.getMe(rq.getActorIdOrThrow());
-		return new RsData<>("200-1", "내 정보 조회 성공", member);
+		return RsData.ok("내 정보 조회 성공", member);
 	}
 
 	@DeleteMapping("/me")
 	public RsData<Void> withdraw() {
 		memberService.withdraw(rq.getActorIdOrThrow());
-		return new RsData<>("200-1", "회원 탈퇴가 완료되었습니다.");
+		return RsData.ok("회원 탈퇴가 완료되었습니다.");
 	}
 }

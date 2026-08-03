@@ -59,7 +59,7 @@ class AuthControllerTest {
 			.andExpect(handler().handlerType(AuthController.class))
 			.andExpect(handler().methodName("loginKakao"))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.resultCode").value("200-1"))
+			.andExpect(jsonPath("$.resultCode").value("200"))
 			.andExpect(jsonPath("$.data.accessToken").isNotEmpty())
 			.andExpect(jsonPath("$.data.refreshToken").isNotEmpty())
 			.andExpect(jsonPath("$.data.isNewMember").value(true));
@@ -88,7 +88,7 @@ class AuthControllerTest {
 			)
 			.andDo(print())
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.resultCode").value("200-1"))
+			.andExpect(jsonPath("$.resultCode").value("200"))
 			.andExpect(jsonPath("$.data.accessToken").isNotEmpty());
 	}
 
@@ -112,7 +112,7 @@ class AuthControllerTest {
 			)
 			.andDo(print())
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.resultCode").value("200-1"));
+			.andExpect(jsonPath("$.resultCode").value("200"));
 
 		org.assertj.core.api.Assertions.assertThat(
 			memberRepository.findById(member.getId()).orElseThrow().getRefreshToken()

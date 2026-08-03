@@ -43,7 +43,7 @@ class BibleControllerTest {
         mvc.perform(get("/bibles/1/1").param("translation", "NKRV"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.resultCode").value("200-1"))
+                .andExpect(jsonPath("$.resultCode").value("200"))
                 .andExpect(jsonPath("$.data.bookName").value("창세기"))
                 .andExpect(jsonPath("$.data.verses[0].text").value("태초에 하나님이 천지를 창조하시니라"));
     }
@@ -54,7 +54,7 @@ class BibleControllerTest {
         mvc.perform(get("/bibles/search").param("keyword", "태초에"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.resultCode").value("200-1"))
+                .andExpect(jsonPath("$.resultCode").value("200"))
                 .andExpect(jsonPath("$.data.results[0].bookName").value("창세기"));
     }
 
