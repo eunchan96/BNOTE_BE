@@ -4,16 +4,14 @@ import com.bnote.domain.bible.dto.response.BibleChapterResponse;
 import com.bnote.domain.bible.dto.response.BibleSearchResponse;
 import com.bnote.domain.bible.dto.response.TranslationResponse;
 import com.bnote.domain.bible.service.BibleService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class BibleFacade {
 
 	private final BibleService bibleService;
-
-	public BibleFacade(BibleService bibleService) {
-		this.bibleService = bibleService;
-	}
 
 	public BibleChapterResponse getChapter(Integer bookId, Integer chapter, String translation) {
 		return bibleService.getChapter(bookId, chapter, translation);

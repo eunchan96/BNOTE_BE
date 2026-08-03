@@ -7,20 +7,18 @@ import com.bnote.domain.bible.entity.BibleVerse;
 import com.bnote.domain.bible.entity.Translation;
 import com.bnote.domain.bible.exception.BibleException;
 import com.bnote.domain.bible.repository.BibleVerseRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class BibleService {
 
 	private final BibleVerseRepository bibleVerseRepository;
-
-	public BibleService(BibleVerseRepository bibleVerseRepository) {
-		this.bibleVerseRepository = bibleVerseRepository;
-	}
 
 	public BibleChapterResponse getChapter(Integer bookId, Integer chapter, String translationCode) {
 		validateBookId(bookId);

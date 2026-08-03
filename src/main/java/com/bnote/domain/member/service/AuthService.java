@@ -8,6 +8,7 @@ import com.bnote.domain.member.repository.MemberRepository;
 import com.bnote.global.auth.jwt.JwtProvider;
 import com.bnote.global.auth.oauth.OAuthClient;
 import com.bnote.global.auth.oauth.SocialUserInfo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,18 +16,13 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class AuthService {
 
 	private final MemberRepository memberRepository;
 	private final JwtProvider jwtProvider;
 	private final List<OAuthClient> oAuthClients;
-
-	public AuthService(MemberRepository memberRepository, JwtProvider jwtProvider, List<OAuthClient> oAuthClients) {
-		this.memberRepository = memberRepository;
-		this.jwtProvider = jwtProvider;
-		this.oAuthClients = oAuthClients;
-	}
 
 	@Transactional
 	public TokenResponse login(SocialType socialType, String authCode) {

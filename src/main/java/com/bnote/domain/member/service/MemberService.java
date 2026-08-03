@@ -4,18 +4,16 @@ import com.bnote.domain.member.dto.response.MemberResponse;
 import com.bnote.domain.member.entity.Member;
 import com.bnote.domain.member.exception.MemberException;
 import com.bnote.domain.member.repository.MemberRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class MemberService {
 
 	private final MemberRepository memberRepository;
-
-	public MemberService(MemberRepository memberRepository) {
-		this.memberRepository = memberRepository;
-	}
 
 	public MemberResponse getMe(Long memberId) {
 		Member member = memberRepository.findById(memberId)

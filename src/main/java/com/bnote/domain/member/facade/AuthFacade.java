@@ -3,16 +3,14 @@ package com.bnote.domain.member.facade;
 import com.bnote.domain.member.dto.response.TokenResponse;
 import com.bnote.domain.member.entity.SocialType;
 import com.bnote.domain.member.service.AuthService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AuthFacade {
 
 	private final AuthService authService;
-
-	public AuthFacade(AuthService authService) {
-		this.authService = authService;
-	}
 
 	public TokenResponse loginKakao(String authCode) {
 		return authService.login(SocialType.KAKAO, authCode);
