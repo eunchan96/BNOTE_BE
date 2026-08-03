@@ -1,3 +1,29 @@
 spring:
   application:
     name: bnote
+  datasource:
+    url: jdbc:h2:mem:bnote
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+
+jwt:
+  secret: ${JWT_SECRET:local-dev-secret-please-change-this-value-before-deploy}
+  access-token-expire-seconds: 3600
+  refresh-token-expire-seconds: 1209600
+
+oauth:
+  kakao:
+    client-id: ${KAKAO_CLIENT_ID:}
+    redirect-uri: ${KAKAO_REDIRECT_URI:http://localhost:3000/auth/kakao/callback}
+  google:
+    client-id: ${GOOGLE_CLIENT_ID:}
+    client-secret: ${GOOGLE_CLIENT_SECRET:}
+    redirect-uri: ${GOOGLE_REDIRECT_URI:http://localhost:3000/auth/google/callback}
