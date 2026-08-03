@@ -26,14 +26,17 @@ public class SecurityConfig {
 	}
 
 	private static final String[] PERMIT_ALL_PATHS = {
-			"/auth/login/**",
-			"/auth/reissue",
-			"/knowledge/**",
-			"/appendix/**",
-			"/bibles/**",
-			"/translations",
-			"/hymns",
-			"/hymn-categories"
+			"/api/v1/auth/login/**",
+			"/api/v1/auth/reissue",
+			"/api/v1/knowledge/**",
+			"/api/v1/appendix/**",
+			"/api/v1/bibles/**",
+			"/api/v1/translations",
+			"/api/v1/hymns",
+			"/api/v1/hymn-categories",
+			"/uploads/**",
+			"/swagger-ui/**",
+			"/v3/api-docs/**"
 	};
 
 	@Bean

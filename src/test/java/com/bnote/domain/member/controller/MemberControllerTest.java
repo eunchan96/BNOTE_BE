@@ -55,7 +55,7 @@ class MemberControllerTest {
 	@DisplayName("내 정보 조회 - 로그인 상태")
 	void t1() throws Exception {
 		mvc.perform(
-				get("/members/me")
+				get("/api/v1/members/me")
 					.header("Authorization", "Bearer " + accessToken)
 			)
 			.andDo(print())
@@ -71,7 +71,7 @@ class MemberControllerTest {
 	@Test
 	@DisplayName("내 정보 조회 - 토큰 없이 요청하면 401")
 	void t2() throws Exception {
-		mvc.perform(get("/members/me"))
+		mvc.perform(get("/api/v1/members/me"))
 			.andDo(print())
 			.andExpect(status().isUnauthorized())
 			.andExpect(jsonPath("$.resultCode").value("401-1"));
@@ -81,7 +81,7 @@ class MemberControllerTest {
 	@DisplayName("회원 탈퇴")
 	void t3() throws Exception {
 		mvc.perform(
-				delete("/members/me")
+				delete("/api/v1/members/me")
 					.header("Authorization", "Bearer " + accessToken)
 			)
 			.andDo(print())

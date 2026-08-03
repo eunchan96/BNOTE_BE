@@ -40,7 +40,7 @@ class BibleControllerTest {
     @Test
     @DisplayName("성경 장 조회 - 인증 없이도 접근 가능")
     void t1() throws Exception {
-        mvc.perform(get("/bibles/1/1").param("translation", "NKRV"))
+        mvc.perform(get("/api/v1/bibles/1/1").param("translation", "NKRV"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.resultCode").value("200"))
@@ -51,7 +51,7 @@ class BibleControllerTest {
     @Test
     @DisplayName("성경 검색 - 인증 없이도 접근 가능")
     void t2() throws Exception {
-        mvc.perform(get("/bibles/search").param("keyword", "태초에"))
+        mvc.perform(get("/api/v1/bibles/search").param("keyword", "태초에"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.resultCode").value("200"))
@@ -61,7 +61,7 @@ class BibleControllerTest {
     @Test
     @DisplayName("대역본 목록 조회")
     void t3() throws Exception {
-        mvc.perform(get("/translations"))
+        mvc.perform(get("/api/v1/translations"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.translations[0].code").value("NKRV"))

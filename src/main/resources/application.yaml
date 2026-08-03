@@ -19,6 +19,10 @@ jwt:
   access-token-expire-seconds: 3600
   refresh-token-expire-seconds: 1209600
 
+file:
+  upload:
+    path: ${FILE_UPLOAD_PATH:./uploads}
+
 oauth:
   kakao:
     client-id: ${KAKAO_CLIENT_ID:}
