@@ -18,4 +18,6 @@ public interface BibleVerseRepository extends JpaRepository<BibleVerse, Long> {
 	List<BibleVerse> findByTranslationAndBookIdAndChapterAndVerseBetweenOrderByVerseAsc(
 			String translation, Integer bookId, Integer chapter, Integer startVerse, Integer endVerse
 	);
+
+	long countByTranslation(String translation);
 }
