@@ -8,10 +8,14 @@ import java.util.List;
 public interface BibleVerseRepository extends JpaRepository<BibleVerse, Long> {
 
 	List<BibleVerse> findByTranslationAndBookIdAndChapterOrderByVerseAsc(
-		String translation, Integer bookId, Integer chapter
+			String translation, Integer bookId, Integer chapter
 	);
 
 	List<BibleVerse> findByTranslationAndTextContainingOrderByBookIdAscChapterAscVerseAsc(
-		String translation, String keyword
+			String translation, String keyword
+	);
+
+	List<BibleVerse> findByTranslationAndBookIdAndChapterAndVerseBetweenOrderByVerseAsc(
+			String translation, Integer bookId, Integer chapter, Integer startVerse, Integer endVerse
 	);
 }
