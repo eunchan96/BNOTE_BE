@@ -39,3 +39,4 @@ out/
 ### Custom ###
 .env
 /src/main/resources/bible-data/
+/src/main/resources/hymn-data/

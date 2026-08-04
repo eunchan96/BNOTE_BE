@@ -36,3 +36,8 @@ bible:
   seed:
     on-startup: ${BIBLE_SEED_ON_STARTUP:true}
     path: bible-data/
+
+hymn:
+  seed:
+    on-startup: ${HYMN_SEED_ON_STARTUP:true}
+    path: hymn-data/

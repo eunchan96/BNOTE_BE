@@ -31,3 +31,8 @@ bible:
   seed:
     on-startup: false
     path: bible-data-test/
+
+hymn:
+  seed:
+    on-startup: false
+    path: hymn-data-test/

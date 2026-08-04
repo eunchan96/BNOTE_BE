@@ -1,0 +1,36 @@
+{
+  "majorCategories": [
+    { "id": 1, "name": "예배", "sortOrder": 0 },
+    { "id": 2, "name": "절기", "sortOrder": 1 }
+  ],
+  "minorCategories": [
+    { "id": 1, "majorId": 1, "name": "찬양과 경배", "sortOrder": 0 },
+    { "id": 2, "majorId": 2, "name": "성탄절", "sortOrder": 0 }
+  ],
+  "hymns": [
+    {
+      "number": 1,
+      "title": "만복의 근원 하나님",
+      "categoryId": 1,
+      "image": "001_1.jpg",
+      "youtubeSong": "https://youtube.com/song1",
+      "youtubeMr": "https://youtube.com/mr1"
+    },
+    {
+      "number": 2,
+      "title": "찬양 성부 성자 성령",
+      "categoryId": 1,
+      "image": "002_1.jpg|002_2.jpg",
+      "youtubeSong": "https://youtube.com/song2",
+      "youtubeMr": "https://youtube.com/mr2"
+    },
+    {
+      "number": 100,
+      "title": "기쁘다 구주 오셨네",
+      "categoryId": 2,
+      "image": "100_1.jpg",
+      "youtubeSong": "https://youtube.com/song100",
+      "youtubeMr": "https://youtube.com/mr100"
+    }
+  ]
+}

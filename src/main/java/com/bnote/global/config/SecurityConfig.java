@@ -32,8 +32,8 @@ public class SecurityConfig {
 			"/api/v1/appendix/**",
 			"/api/v1/bibles/**",
 			"/api/v1/translations",
-			"/api/v1/hymns",
-			"/api/v1/hymn-categories",
+			"/api/v1/hymns/**",
+			"/api/v1/hymn-categories/**",
 			"/uploads/**",
 			"/swagger-ui/**",
 			"/v3/api-docs/**"
