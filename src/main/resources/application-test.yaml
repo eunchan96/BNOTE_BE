@@ -39,3 +39,12 @@ hymn:
   seed:
     on-startup: false
     path: hymn-data-test/
+
+knowledge:
+  seed:
+    on-startup: false
+    path: knowledge-data-test/
+
+appendix:
+  data:
+    path: appendix-data-test/

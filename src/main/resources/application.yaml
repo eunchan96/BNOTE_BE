@@ -44,3 +44,12 @@ hymn:
   seed:
     on-startup: ${HYMN_SEED_ON_STARTUP:true}
     path: hymn-data/
+
+knowledge:
+  seed:
+    on-startup: ${KNOWLEDGE_SEED_ON_STARTUP:true}
+    path: knowledge-data/
+
+appendix:
+  data:
+    path: appendix-data/
