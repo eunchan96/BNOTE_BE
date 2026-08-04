@@ -1,0 +1,9 @@
+[
+  {
+    "id": "comfort",
+    "title": "위로가 필요할 때",
+    "verses": [
+      { "bookId": 19, "chapter": 23, "verseStart": 1, "verseEnd": 6 }
+    ]
+  }
+]
