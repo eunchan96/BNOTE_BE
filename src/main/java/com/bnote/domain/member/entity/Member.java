@@ -28,14 +28,30 @@ public class Member extends BaseEntity {
 	@Column(name = "social_id", nullable = false)
 	private String socialId;
 
+	/** 소셜 로그인 제공자가 준 닉네임. 로그인할 때마다 최신값으로 갱신됨. */
 	@Column(nullable = false)
 	private String nickname;
 
+	/** 소셜 로그인 제공자가 준 프로필 사진. 로그인할 때마다 최신값으로 갱신됨. */
 	@Column(name = "profile_image_url")
 	private String profileImageUrl;
 
 	@Column(name = "refresh_token")
 	private String refreshToken;
+
+	// ===== 마이페이지 프로필 (사용자가 직접 입력, 소셜 로그인 값과 무관) =====
+
+	private String name;
+
+	private String church;
+
+	private String department;
+
+	private String position;
+
+	/** 사용자가 직접 업로드한 프로필 사진. profileImageUrl(소셜 제공)과 별개. */
+	@Column(name = "photo_url")
+	private String photoUrl;
 
 	@Builder
 	private Member(SocialType socialType, String socialId, String nickname, String profileImageUrl) {
@@ -49,8 +65,21 @@ public class Member extends BaseEntity {
 		this.refreshToken = refreshToken;
 	}
 
-	public void updateProfile(String nickname, String profileImageUrl) {
+	/** 소셜 로그인 시 제공자 쪽 정보(닉네임/프로필 사진)를 최신값으로 갱신 */
+	public void updateSocialProfile(String nickname, String profileImageUrl) {
 		this.nickname = nickname;
 		this.profileImageUrl = profileImageUrl;
+	}
+
+	/** 마이페이지에서 사용자가 직접 입력하는 프로필 정보 갱신 */
+	public void updateMyPageProfile(String name, String church, String department, String position) {
+		this.name = name;
+		this.church = church;
+		this.department = department;
+		this.position = position;
+	}
+
+	public void updatePhotoUrl(String photoUrl) {
+		this.photoUrl = photoUrl;
 	}
 }

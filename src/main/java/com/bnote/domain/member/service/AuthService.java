@@ -34,7 +34,7 @@ public class AuthService {
 
 		Member member = existingMember
 				.map(existing -> {
-					existing.updateProfile(userInfo.nickname(), userInfo.profileImageUrl());
+					existing.updateSocialProfile(userInfo.nickname(), userInfo.profileImageUrl());
 					return existing;
 				})
 				.orElseGet(() -> memberRepository.save(
