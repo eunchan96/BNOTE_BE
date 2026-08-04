@@ -3,8 +3,8 @@ package com.bnote.domain.bible.bible.seed;
 import com.bnote.domain.bible.bible.entity.BibleVerse;
 import com.bnote.domain.bible.bible.entity.Translation;
 import com.bnote.domain.bible.bible.repository.BibleVerseRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.io.ClassPathResource;
@@ -28,16 +28,29 @@ import java.util.List;
  */
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class BibleSeeder implements ApplicationRunner {
-
-	private static final String BASE_PATH = "bible-data/";
 
 	private final BibleVerseRepository bibleVerseRepository;
 	private final ObjectMapper objectMapper = new ObjectMapper();
+	private final String basePath;
+	private final boolean seedOnStartup;
+
+	public BibleSeeder(
+			BibleVerseRepository bibleVerseRepository,
+			@Value("${bible.seed.path:bible-data/}") String basePath,
+			@Value("${bible.seed.on-startup:true}") boolean seedOnStartup
+	) {
+		this.bibleVerseRepository = bibleVerseRepository;
+		this.basePath = basePath;
+		this.seedOnStartup = seedOnStartup;
+	}
 
 	@Override
 	public void run(ApplicationArguments args) {
+		if (!seedOnStartup) {
+			log.info("[BibleSeeder] bible.seed.on-startup=false 라서 자동 시딩을 건너뜁니다.");
+			return;
+		}
 		for (Translation translation : Translation.values()) {
 			seedIfEmpty(translation);
 		}
@@ -49,9 +62,9 @@ public class BibleSeeder implements ApplicationRunner {
 			return;
 		}
 
-		Resource resource = new ClassPathResource(BASE_PATH + translation.getAssetFileName());
+		Resource resource = new ClassPathResource(basePath + translation.getAssetFileName());
 		if (!resource.exists()) {
-			log.warn("[BibleSeeder] {} 시드 파일이 없어 건너뜁니다: {}{}", translation.getCode(), BASE_PATH, translation.getAssetFileName());
+			log.warn("[BibleSeeder] {} 시드 파일이 없어 건너뜁니다: {}{}", translation.getCode(), basePath, translation.getAssetFileName());
 			return;
 		}
 
@@ -64,8 +77,8 @@ public class BibleSeeder implements ApplicationRunner {
 		}
 
 		List<BibleVerse> verses = translation.isNestedBookFormat()
-			? parseNestedBookFormat(root, translation.getCode())
-			: parseFlatFormat(root, translation.getCode());
+				? parseNestedBookFormat(root, translation.getCode())
+				: parseFlatFormat(root, translation.getCode());
 
 		bibleVerseRepository.saveAll(verses);
 		log.info("[BibleSeeder] {} {}개 절 시딩 완료", translation.getCode(), verses.size());
@@ -77,16 +90,16 @@ public class BibleSeeder implements ApplicationRunner {
 
 		for (JsonNode obj : array) {
 			verses.add(
-				BibleVerse.builder()
-					.translation(translationCode)
-					.bookId(obj.get("book").asInt())
-					.chapter(obj.get("chapter").asInt())
-					.verse(obj.get("verse").asInt())
-					.text(obj.get("text").asString())
-					.title(textOrNull(obj, "title"))
-					.title2(textOrNull(obj, "title_2"))
-					.text2(textOrNull(obj, "text_2"))
-					.build()
+					BibleVerse.builder()
+							.translation(translationCode)
+							.bookId(obj.get("book").asInt())
+							.chapter(obj.get("chapter").asInt())
+							.verse(obj.get("verse").asInt())
+							.text(obj.get("text").asString())
+							.title(textOrNull(obj, "title"))
+							.title2(textOrNull(obj, "title_2"))
+							.text2(textOrNull(obj, "text_2"))
+							.build()
 			);
 		}
 		return verses;
@@ -129,14 +142,14 @@ public class BibleSeeder implements ApplicationRunner {
 					}
 
 					verses.add(
-						BibleVerse.builder()
-							.translation(translationCode)
-							.bookId(bookId)
-							.chapter(chapterNum)
-							.verse(Integer.parseInt(verseNumRaw))
-							.text(textBuilder.toString())
-							.text2(text2)
-							.build()
+							BibleVerse.builder()
+									.translation(translationCode)
+									.bookId(bookId)
+									.chapter(chapterNum)
+									.verse(Integer.parseInt(verseNumRaw))
+									.text(textBuilder.toString())
+									.text2(text2)
+									.build()
 					);
 
 					index = next;

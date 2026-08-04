@@ -31,3 +31,8 @@ oauth:
     client-id: ${GOOGLE_CLIENT_ID:}
     client-secret: ${GOOGLE_CLIENT_SECRET:}
     redirect-uri: ${GOOGLE_REDIRECT_URI:http://localhost:3000/auth/google/callback}
+
+bible:
+  seed:
+    on-startup: ${BIBLE_SEED_ON_STARTUP:true}
+    path: bible-data/

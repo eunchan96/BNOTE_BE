@@ -26,3 +26,8 @@ oauth:
     client-id: test-google-client-id
     client-secret: test-google-client-secret
     redirect-uri: http://localhost:3000/auth/google/callback
+
+bible:
+  seed:
+    on-startup: false
+    path: bible-data-test/
