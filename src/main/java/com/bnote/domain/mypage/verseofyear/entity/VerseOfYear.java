@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @Table(
-	name = "verse_of_years",
-	uniqueConstraints = @UniqueConstraint(columnNames = {"member_id", "year"})
+		name = "verse_of_years",
+		uniqueConstraints = @UniqueConstraint(columnNames = {"member_id", "year"})
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class VerseOfYear extends BaseEntity {

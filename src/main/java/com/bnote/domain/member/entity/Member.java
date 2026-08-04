@@ -43,8 +43,10 @@ public class Member extends BaseEntity {
 
 	private String name;
 
+	@Column(name = "church")
 	private String church;
 
+	@Column(name = "department")
 	private String department;
 
 	private String position;

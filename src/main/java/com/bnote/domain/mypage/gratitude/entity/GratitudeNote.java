@@ -15,8 +15,8 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @Table(
-	name = "gratitude_notes",
-	uniqueConstraints = @UniqueConstraint(columnNames = {"member_id", "date"})
+		name = "gratitude_notes",
+		uniqueConstraints = @UniqueConstraint(columnNames = {"member_id", "date"})
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GratitudeNote extends BaseEntity {
