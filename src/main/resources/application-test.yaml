@@ -48,3 +48,6 @@ knowledge:
 appendix:
   data:
     path: appendix-data-test/
+
+cors:
+  allowed-origins: http://localhost:3000

@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -16,13 +17,16 @@ public class SecurityConfig {
 
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+	private final CorsConfigurationSource corsConfigurationSource;
 
 	public SecurityConfig(
 			JwtAuthenticationFilter jwtAuthenticationFilter,
-			JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint
+			JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
+			CorsConfigurationSource corsConfigurationSource
 	) {
 		this.jwtAuthenticationFilter = jwtAuthenticationFilter;
 		this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
+		this.corsConfigurationSource = corsConfigurationSource;
 	}
 
 	private static final String[] PERMIT_ALL_PATHS = {
@@ -42,6 +46,7 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
+				.cors(cors -> cors.configurationSource(corsConfigurationSource))
 				.csrf(csrf -> csrf.disable())
 				.formLogin(form -> form.disable())
 				.httpBasic(basic -> basic.disable())

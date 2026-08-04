@@ -1,4 +1,4 @@
-package com.bnote.global.springdoc;
+package com.bnote.global.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
