@@ -1,3 +1,60 @@
 spring:
   application:
     name: bnote
+  datasource:
+    url: jdbc:h2:mem:bnote
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        globally_quoted_identifiers: true
+  h2:
+    console:
+      enabled: true
+
+jwt:
+  secret: ${JWT_SECRET:local-dev-secret-please-change-this-value-before-deploy}
+  access-token-expire-seconds: 3600
+  refresh-token-expire-seconds: 1209600
+
+file:
+  storage:
+    type: ${FILE_STORAGE_TYPE:local}
+  upload:
+    path: ${FILE_UPLOAD_PATH:./uploads}
+
+oauth:
+  kakao:
+    client-id: ${KAKAO_CLIENT_ID:}
+    redirect-uri: ${KAKAO_REDIRECT_URI:http://localhost:3000/auth/kakao/callback}
+  google:
+    client-id: ${GOOGLE_CLIENT_ID:}
+    client-secret: ${GOOGLE_CLIENT_SECRET:}
+    redirect-uri: ${GOOGLE_REDIRECT_URI:http://localhost:3000/auth/google/callback}
+
+bible:
+  seed:
+    on-startup: ${BIBLE_SEED_ON_STARTUP:true}
+    path: bible-data/
+
+hymn:
+  seed:
+    on-startup: ${HYMN_SEED_ON_STARTUP:true}
+    path: hymn-data/
+
+knowledge:
+  seed:
+    on-startup: ${KNOWLEDGE_SEED_ON_STARTUP:true}
+    path: knowledge-data/
+
+appendix:
+  data:
+    path: appendix-data/
+
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}

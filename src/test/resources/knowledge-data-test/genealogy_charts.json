@@ -1,0 +1,12 @@
+[
+  {
+    "id": "abraham-family",
+    "title": "아브라함의 족보",
+    "description": "데라부터 이어지는 족보",
+    "keyBookId": 1, "keyChapter": 11, "keyVerseLabel": "창 11:27",
+    "entries": [
+      { "name": "데라", "relation": "아브라함의 아버지", "note": "우르 출신" },
+      { "name": "아브라함", "relation": "본인", "note": "믿음의 조상" }
+    ]
+  }
+]
