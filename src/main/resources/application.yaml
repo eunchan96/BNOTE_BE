@@ -23,6 +23,8 @@ jwt:
   refresh-token-expire-seconds: 1209600
 
 file:
+  storage:
+    type: ${FILE_STORAGE_TYPE:local}
   upload:
     path: ${FILE_UPLOAD_PATH:./uploads}
 

@@ -1,56 +1,18 @@
 package com.bnote.global.file;
 
-import com.bnote.global.exception.ServiceException;
-import com.bnote.global.response.RsStatus;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.UUID;
-
-@Component
-public class FileStorageService {
-
-	private final Path uploadRoot;
-
-	public FileStorageService(@Value("${file.upload.path}") String uploadPath) {
-		this.uploadRoot = Path.of(uploadPath);
-	}
+/**
+ * 파일 저장 방식은 환경에 따라 다르다.
+ * - 로컬/개발: LocalFileStorageService (서버 디스크에 저장)
+ * - 운영(Render 등 디스크가 휘발성인 PaaS): SupabaseFileStorageService (Supabase Storage에 저장)
+ * file.storage.type 설정값으로 어떤 구현체를 쓸지 고른다.
+ */
+public interface FileStorageService {
 
 	/**
 	 * @param subDirectory "sermons/123" 같은 하위 경로 (앞뒤 슬래시 없이)
-	 * @return "/uploads/sermons/123/{생성된 파일명}" 형태의 접근 가능한 URL
+	 * @return 접근 가능한 URL
 	 */
-	public String store(MultipartFile file, String subDirectory) {
-		if (file == null || file.isEmpty()) {
-			throw new ServiceException(RsStatus.BAD_REQUEST.getResultCode() + "-1", "빈 파일은 업로드할 수 없습니다.");
-		}
-
-		try {
-			Path targetDir = uploadRoot.resolve(subDirectory);
-			Files.createDirectories(targetDir);
-
-			String extension = extractExtension(file.getOriginalFilename());
-			String fileName = UUID.randomUUID() + extension;
-
-			Path targetPath = targetDir.resolve(fileName);
-			file.transferTo(targetPath);
-
-			return "/uploads/" + subDirectory + "/" + fileName;
-		} catch (IOException e) {
-			throw new ServiceException(
-				RsStatus.INTERNAL_SERVER_ERROR.getResultCode(), "파일 업로드에 실패했습니다."
-			);
-		}
-	}
-
-	private String extractExtension(String originalFilename) {
-		if (originalFilename == null || !originalFilename.contains(".")) {
-			return "";
-		}
-		return originalFilename.substring(originalFilename.lastIndexOf('.'));
-	}
+	String store(MultipartFile file, String subDirectory);
 }
