@@ -61,7 +61,7 @@ class HymnControllerTest {
         mvc.perform(get("/api/v1/hymns/1"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.imageFileNames[0]").value("001.jpg"));
+                .andExpect(jsonPath("$.data.imageUrls[0]").value("/uploads/hymns/images/001.jpg"));
     }
 
     @Test

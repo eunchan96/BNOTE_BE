@@ -38,5 +38,5 @@ out/
 
 ### Custom ###
 .env
-/src/main/resources/bible-data/
-/src/main/resources/hymn-data/
+/src/main/resources/**/*.json
+/uploads
