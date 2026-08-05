@@ -10,7 +10,7 @@ RUN chmod +x gradlew && ./gradlew dependencies --no-daemon || true
 
 # 실제 소스 복사 후 빌드 (테스트는 배포 파이프라인에서 생략 - Render는 배포용이라 여기선 스킵)
 COPY . .
-RUN ./gradlew bootJar --no-daemon -x test
+RUN chmod +x gradlew && ./gradlew bootJar --no-daemon -x test
 
 # ===== 2단계: 실행 =====
 FROM eclipse-temurin:21-jre
