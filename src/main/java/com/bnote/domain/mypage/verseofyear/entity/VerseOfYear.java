@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(
 		name = "verse_of_years",
-		uniqueConstraints = @UniqueConstraint(columnNames = {"member_id", "year"})
+		uniqueConstraints = @UniqueConstraint(columnNames = {"member_id", "target_year"})
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class VerseOfYear extends BaseEntity {
@@ -22,7 +22,8 @@ public class VerseOfYear extends BaseEntity {
 	@Column(name = "member_id", nullable = false)
 	private Long memberId;
 
-	@Column(nullable = false)
+	/** DB 컬럼명은 target_year — "year"는 H2/PostgreSQL 등에서 예약어라 컬럼명으로 못 씀 */
+	@Column(name = "target_year", nullable = false)
 	private Integer year;
 
 	private String note;

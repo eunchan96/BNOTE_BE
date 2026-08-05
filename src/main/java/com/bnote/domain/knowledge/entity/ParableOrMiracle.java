@@ -21,8 +21,8 @@ public class ParableOrMiracle {
 	@Column(nullable = false)
 	private String title;
 
-	/** "비유" 또는 "이적" */
-	@Column(nullable = false)
+	/** "비유" 또는 "이적". DB 컬럼명은 category_type — "type"도 예약어 후보라 안전하게 명시 */
+	@Column(name = "category_type", nullable = false)
 	private String type;
 
 	@Column(nullable = false)
@@ -42,8 +42,8 @@ public class ParableOrMiracle {
 
 	@Builder
 	private ParableOrMiracle(
-		String id, String title, String type, String summary, String description,
-		Integer keyBookId, Integer keyChapter, String keyVerseLabel
+			String id, String title, String type, String summary, String description,
+			Integer keyBookId, Integer keyChapter, String keyVerseLabel
 	) {
 		this.id = id;
 		this.title = title;

@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @Getter
 @Table(
 		name = "gratitude_notes",
-		uniqueConstraints = @UniqueConstraint(columnNames = {"member_id", "date"})
+		uniqueConstraints = @UniqueConstraint(columnNames = {"member_id", "note_date"})
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GratitudeNote extends BaseEntity {
@@ -24,7 +24,8 @@ public class GratitudeNote extends BaseEntity {
 	@Column(name = "member_id", nullable = false)
 	private Long memberId;
 
-	@Column(nullable = false)
+	/** DB 컬럼명은 note_date — "date"도 예약어라 안전하게 명시 */
+	@Column(name = "note_date", nullable = false)
 	private LocalDate date;
 
 	@Builder

@@ -1,7 +1,11 @@
 # appendix-data
 
-`AppendixService`가 서버 기동 시 이 폴더의 4개 JSON 파일을 각각 읽어 메모리에 캐싱합니다.
-Android 앱의 `assets/appendix/` 파일명·구조를 그대로 씁니다. DB 테이블은 쓰지 않습니다.
+`AppendixSeeder`가 서버 기동 시 이 폴더의 4개 JSON 파일을 각각 읽어 **DB에 저장**합니다(다른 시더들과 동일한 방식).
+Android 앱의 `assets/appendix/` 파일명·구조를 그대로 씁니다.
+
+⚠️ **배포 서버(Render 등)에는 이 JSON 파일이 없습니다** (gitignore돼 있어서 GitHub 빌드에 안 올라감).
+그래서 다른 시더들처럼, **로컬에서 `SUPABASE_DB_URL`을 운영 Supabase로 잡고 한 번 실행**해서 DB에 채워두면,
+이후 배포 서버는 파일 없이도 DB에서 그대로 읽어 서빙합니다. 이미 데이터가 있으면 재시딩하지 않습니다.
 
 ## 파일 목록
 
