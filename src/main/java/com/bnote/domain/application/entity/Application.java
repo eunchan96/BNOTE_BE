@@ -3,7 +3,6 @@ package com.bnote.domain.application.entity;
 import com.bnote.global.jpa.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -30,16 +29,13 @@ public class Application extends BaseEntity {
 	@Column(name = "application_date", nullable = false)
 	private LocalDate applicationDate;
 
-	@Lob
-	@Column(name = "meditation_memo")
+	@Column(name = "meditation_memo", columnDefinition = "text")
 	private String meditationMemo;
 
-	@Lob
-	@Column(name = "prayer_memo")
+	@Column(name = "prayer_memo", columnDefinition = "text")
 	private String prayerMemo;
 
-	@Lob
-	@Column(name = "obedience_memo")
+	@Column(name = "obedience_memo", columnDefinition = "text")
 	private String obedienceMemo;
 
 	@Builder

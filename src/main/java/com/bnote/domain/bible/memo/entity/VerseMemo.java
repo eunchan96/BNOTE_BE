@@ -4,7 +4,6 @@ import com.bnote.global.jpa.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -32,8 +31,7 @@ public class VerseMemo extends BaseEntity {
 	@Column(nullable = false)
 	private Integer verse;
 
-	@Lob
-	@Column(nullable = false)
+	@Column(columnDefinition = "text", nullable = false)
 	private String text;
 
 	@Builder

@@ -3,7 +3,6 @@ package com.bnote.domain.mypage.prayerrequest.entity;
 import com.bnote.global.jpa.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -21,8 +20,7 @@ public class PrayerRequest extends BaseEntity {
 	@Column(name = "member_id", nullable = false)
 	private Long memberId;
 
-	@Lob
-	@Column(nullable = false)
+	@Column(columnDefinition = "text", nullable = false)
 	private String content;
 
 	@Column(name = "is_answered", nullable = false)

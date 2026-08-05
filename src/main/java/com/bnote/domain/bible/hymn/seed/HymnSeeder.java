@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -38,19 +39,22 @@ public class HymnSeeder implements ApplicationRunner {
 	private final String basePath;
 	private final String fileName;
 	private final boolean seedOnStartup;
+	private final HymnSeeder self;
 
 	public HymnSeeder(
-		HymnRepository hymnRepository,
-		HymnCategoryRepository hymnCategoryRepository,
-		@Value("${hymn.seed.path:hymn-data/}") String basePath,
-		@Value("${hymn.seed.file-name:hymns.json}") String fileName,
-		@Value("${hymn.seed.on-startup:true}") boolean seedOnStartup
+			HymnRepository hymnRepository,
+			HymnCategoryRepository hymnCategoryRepository,
+			@Value("${hymn.seed.path:hymn-data/}") String basePath,
+			@Value("${hymn.seed.file-name:hymns.json}") String fileName,
+			@Value("${hymn.seed.on-startup:true}") boolean seedOnStartup,
+			@Lazy HymnSeeder self
 	) {
 		this.hymnRepository = hymnRepository;
 		this.hymnCategoryRepository = hymnCategoryRepository;
 		this.basePath = basePath;
 		this.fileName = fileName;
 		this.seedOnStartup = seedOnStartup;
+		this.self = self;
 	}
 
 	@Override
@@ -59,14 +63,17 @@ public class HymnSeeder implements ApplicationRunner {
 			log.info("[HymnSeeder] hymn.seed.on-startup=false 라서 자동 시딩을 건너뜁니다.");
 			return;
 		}
-		seedIfEmpty();
+		self.seedIfEmpty();
 	}
 
 	@Transactional
 	public void seedIfEmpty() {
 		if (hymnRepository.count() > 0) {
+			log.info("[HymnSeeder] 이미 찬송가 데이터가 있어 건너뜁니다.");
 			return;
 		}
+
+		log.info("[HymnSeeder] ===== 찬송가 시딩 시작 =====");
 
 		Resource resource = new ClassPathResource(basePath + fileName);
 		if (!resource.exists()) {
@@ -87,6 +94,7 @@ public class HymnSeeder implements ApplicationRunner {
 		int hymnCount = seedHymns(root.get("hymns"), minorIdMap);
 
 		log.info("[HymnSeeder] 대분류 {}개, 소분류 {}개, 찬송가 {}개 시딩 완료", majorIdMap.size(), minorIdMap.size(), hymnCount);
+		log.info("[HymnSeeder] ===== 찬송가 시딩 전체 완료 =====");
 	}
 
 	private Map<Long, Long> seedMajorCategories(JsonNode majorArray) {
@@ -94,11 +102,11 @@ public class HymnSeeder implements ApplicationRunner {
 		for (JsonNode obj : majorArray) {
 			long jsonId = obj.get("id").asLong();
 			HymnCategory saved = hymnCategoryRepository.save(
-				HymnCategory.builder()
-					.name(obj.get("name").asString())
-					.parentId(null)
-					.sortOrder(obj.get("sortOrder").asInt())
-					.build()
+					HymnCategory.builder()
+							.name(obj.get("name").asString())
+							.parentId(null)
+							.sortOrder(obj.get("sortOrder").asInt())
+							.build()
 			);
 			majorIdMap.put(jsonId, saved.getId());
 		}
@@ -116,11 +124,11 @@ public class HymnSeeder implements ApplicationRunner {
 			}
 
 			HymnCategory saved = hymnCategoryRepository.save(
-				HymnCategory.builder()
-					.name(obj.get("name").asString())
-					.parentId(realMajorId)
-					.sortOrder(obj.get("sortOrder").asInt())
-					.build()
+					HymnCategory.builder()
+							.name(obj.get("name").asString())
+							.parentId(realMajorId)
+							.sortOrder(obj.get("sortOrder").asInt())
+							.build()
 			);
 			minorIdMap.put(jsonId, saved.getId());
 		}
@@ -137,14 +145,14 @@ public class HymnSeeder implements ApplicationRunner {
 			}
 
 			hymns.add(
-				Hymn.builder()
-					.number(obj.get("number").asInt())
-					.title(obj.get("title").asString())
-					.categoryId(realCategoryId)
-					.imageFileName(obj.get("image").asString())
-					.youtubeSongUrl(obj.get("youtubeSong").asString())
-					.youtubeMrUrl(obj.get("youtubeMr").asString())
-					.build()
+					Hymn.builder()
+							.number(obj.get("number").asInt())
+							.title(obj.get("title").asString())
+							.categoryId(realCategoryId)
+							.imageFileName(obj.get("image").asString())
+							.youtubeSongUrl(obj.get("youtubeSong").asString())
+							.youtubeMrUrl(obj.get("youtubeMr").asString())
+							.build()
 			);
 		}
 		hymnRepository.saveAll(hymns);
