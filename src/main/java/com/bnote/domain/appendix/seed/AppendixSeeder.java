@@ -37,11 +37,11 @@ public class AppendixSeeder implements ApplicationRunner {
 	private final AppendixSeeder self;
 
 	public AppendixSeeder(
-		AppendixTextRepository appendixTextRepository,
-		ResponsiveReadingRepository responsiveReadingRepository,
-		@Value("${appendix.seed.path:appendix-data/}") String basePath,
-		@Value("${appendix.seed.on-startup:true}") boolean seedOnStartup,
-		@Lazy AppendixSeeder self
+			AppendixTextRepository appendixTextRepository,
+			ResponsiveReadingRepository responsiveReadingRepository,
+			@Value("${appendix.seed.path:appendix-data/}") String basePath,
+			@Value("${appendix.seed.on-startup:true}") boolean seedOnStartup,
+			@Lazy AppendixSeeder self
 	) {
 		this.appendixTextRepository = appendixTextRepository;
 		this.responsiveReadingRepository = responsiveReadingRepository;
@@ -61,14 +61,17 @@ public class AppendixSeeder implements ApplicationRunner {
 
 	@Transactional
 	public void seedIfEmpty() {
+		log.info("[AppendixSeeder] ===== 부록 시딩 시작 =====");
 		seedText("lords-prayer", "lords_prayer.json");
 		seedText("apostles-creed", "apostles_creed.json");
 		seedText("ten-commandments", "ten_commandments.json");
 		seedResponsiveReadings("responsive_readings.json");
+		log.info("[AppendixSeeder] ===== 부록 시딩 전체 완료 =====");
 	}
 
 	private void seedText(String id, String fileName) {
 		if (appendixTextRepository.existsById(id)) {
+			log.info("[AppendixSeeder] {} 은(는) 이미 데이터가 있어 건너뜁니다.", id);
 			return;
 		}
 		JsonNode root = readJson(fileName);
@@ -78,13 +81,14 @@ public class AppendixSeeder implements ApplicationRunner {
 
 		String title = root.get("title") == null ? null : root.get("title").asString();
 		appendixTextRepository.save(
-			AppendixText.builder().id(id).title(title).contentJson(root.toString()).build()
+				AppendixText.builder().id(id).title(title).contentJson(root.toString()).build()
 		);
 		log.info("[AppendixSeeder] {} 시딩 완료", id);
 	}
 
 	private void seedResponsiveReadings(String fileName) {
 		if (responsiveReadingRepository.count() > 0) {
+			log.info("[AppendixSeeder] 교독문은 이미 데이터가 있어 건너뜁니다.");
 			return;
 		}
 		JsonNode array = readJson(fileName);
@@ -98,11 +102,11 @@ public class AppendixSeeder implements ApplicationRunner {
 			String title = r.get("title") == null ? null : r.get("title").asString();
 			JsonNode lines = r.get("lines");
 			responsiveReadingRepository.save(
-				ResponsiveReadingEntity.builder()
-					.number(number)
-					.title(title)
-					.linesJson(lines == null ? "[]" : lines.toString())
-					.build()
+					ResponsiveReadingEntity.builder()
+							.number(number)
+							.title(title)
+							.linesJson(lines == null ? "[]" : lines.toString())
+							.build()
 			);
 			count++;
 		}
