@@ -57,7 +57,8 @@ knowledge:
     path: knowledge-data/
 
 appendix:
-  data:
+  seed:
+    on-startup: ${APPENDIX_SEED_ON_STARTUP:true}
     path: appendix-data/
 
 cors:

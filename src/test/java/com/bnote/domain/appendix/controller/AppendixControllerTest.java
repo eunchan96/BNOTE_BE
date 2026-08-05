@@ -1,5 +1,7 @@
 package com.bnote.domain.appendix.controller;
 
+import com.bnote.domain.appendix.seed.AppendixSeeder;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -16,10 +19,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 class AppendixControllerTest {
 
     @Autowired
     private MockMvc mvc;
+
+    @Autowired
+    private AppendixSeeder appendixSeeder;
+
+    @BeforeEach
+    void setUp() {
+        appendixSeeder.seedIfEmpty();
+    }
 
     @Test
     @DisplayName("인증 없이 주기도문을 조회할 수 있다")

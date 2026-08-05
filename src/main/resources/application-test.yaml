@@ -46,7 +46,8 @@ knowledge:
     path: knowledge-data-test/
 
 appendix:
-  data:
+  seed:
+    on-startup: false
     path: appendix-data-test/
 
 cors:

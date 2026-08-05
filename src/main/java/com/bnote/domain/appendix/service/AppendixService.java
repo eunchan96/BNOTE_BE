@@ -1,99 +1,44 @@
 package com.bnote.domain.appendix.service;
 
 import com.bnote.domain.appendix.dto.response.*;
+import com.bnote.domain.appendix.entity.AppendixText;
 import com.bnote.domain.appendix.exception.AppendixException;
-import jakarta.annotation.PostConstruct;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
+import com.bnote.domain.appendix.repository.AppendixTextRepository;
+import com.bnote.domain.appendix.repository.ResponsiveReadingRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 주기도문/사도신경/십계명/교독문은 회원과 무관한 정적 콘텐츠라 DB 테이블 없이,
- * 서버 기동 시 Android 앱과 동일한 4개 JSON 파일(appendix-data/*.json)을 읽어 메모리에 캐싱한다.
+ * 주기도문/사도신경/십계명/교독문은 회원과 무관한 정적 콘텐츠지만, 이제는 DB(AppendixSeeder가 채움)에서 읽는다.
+ * Render처럼 원본 JSON이 없는 배포 환경에서도, 시딩만 한 번 로컬에서 Supabase로 해두면
+ * 배포 서버는 파일 없이도 DB로부터 정상 서빙할 수 있다.
  */
-@Slf4j
 @Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AppendixService {
 
+	private final AppendixTextRepository appendixTextRepository;
+	private final ResponsiveReadingRepository responsiveReadingRepository;
 	private final ObjectMapper objectMapper = new ObjectMapper();
-	private final String basePath;
-
-	private VersionedTextResponse lordsPrayer;
-	private VersionedTextResponse apostlesCreed;
-	private TenCommandmentsResponse tenCommandments;
-	private List<ResponsiveReadingResponse> responsiveReadings = List.of();
-
-	public AppendixService(@Value("${appendix.data.path:appendix-data/}") String basePath) {
-		this.basePath = basePath;
-	}
-
-	@PostConstruct
-	void load() {
-		lordsPrayer = loadVersionedText("lords_prayer.json");
-		apostlesCreed = loadVersionedText("apostles_creed.json");
-		tenCommandments = loadTenCommandments("ten_commandments.json");
-		responsiveReadings = loadResponsiveReadings("responsive_readings.json");
-	}
 
 	public VersionedTextResponse getLordsPrayer() {
-		if (lordsPrayer == null) {
-			throw AppendixException.lordsPrayerNotFound();
-		}
-		return lordsPrayer;
+		return toVersionedText(findText("lords-prayer", AppendixException::lordsPrayerNotFound));
 	}
 
 	public VersionedTextResponse getApostlesCreed() {
-		if (apostlesCreed == null) {
-			throw AppendixException.apostlesCreedNotFound();
-		}
-		return apostlesCreed;
+		return toVersionedText(findText("apostles-creed", AppendixException::apostlesCreedNotFound));
 	}
 
 	public TenCommandmentsResponse getTenCommandments() {
-		if (tenCommandments == null) {
-			throw AppendixException.tenCommandmentsNotFound();
-		}
-		return tenCommandments;
-	}
-
-	public List<ResponsiveReadingResponse> getResponsiveReadings() {
-		return responsiveReadings;
-	}
-
-	public ResponsiveReadingResponse getResponsiveReading(int number) {
-		return responsiveReadings.stream()
-				.filter(r -> r.number() == number)
-				.findFirst()
-				.orElseThrow(() -> AppendixException.responsiveReadingNotFound(number));
-	}
-
-	private VersionedTextResponse loadVersionedText(String fileName) {
-		JsonNode root = readJson(fileName);
-		if (root == null) {
-			return null;
-		}
-
-		List<TextVersionResponse> versions = new ArrayList<>();
-		for (JsonNode v : root.get("versions")) {
-			versions.add(new TextVersionResponse(text(v, "id"), text(v, "label"), stringList(v.get("lines"))));
-		}
-		return new VersionedTextResponse(text(root, "title"), versions);
-	}
-
-	private TenCommandmentsResponse loadTenCommandments(String fileName) {
-		JsonNode root = readJson(fileName);
-		if (root == null) {
-			return null;
-		}
+		AppendixText entity = findText("ten-commandments", AppendixException::tenCommandmentsNotFound);
+		JsonNode root = objectMapper.readTree(entity.getContentJson());
 
 		List<CommandmentItemResponse> commandments = new ArrayList<>();
 		for (JsonNode c : root.get("commandments")) {
@@ -106,39 +51,41 @@ public class AppendixService {
 		);
 
 		return new TenCommandmentsResponse(
-				text(root, "title"), stringList(root.get("intro")), commandments, text(root, "reference"), summary
+				entity.getTitle(), stringList(root.get("intro")), commandments, text(root, "reference"), summary
 		);
 	}
 
-	private List<ResponsiveReadingResponse> loadResponsiveReadings(String fileName) {
-		JsonNode array = readJson(fileName);
-		if (array == null) {
-			return List.of();
-		}
-
-		List<ResponsiveReadingResponse> readings = new ArrayList<>();
-		for (JsonNode r : array) {
-			List<ResponsiveReadingLineResponse> lines = new ArrayList<>();
-			for (JsonNode l : r.get("lines")) {
-				lines.add(new ResponsiveReadingLineResponse(text(l, "speaker"), text(l, "text")));
-			}
-			readings.add(new ResponsiveReadingResponse(r.get("number").asInt(), text(r, "title"), lines));
-		}
-		return readings;
+	public List<ResponsiveReadingResponse> getResponsiveReadings() {
+		return responsiveReadingRepository.findAllByOrderByNumberAsc().stream()
+				.map(r -> new ResponsiveReadingResponse(r.getNumber(), r.getTitle(), parseLines(r.getLinesJson())))
+				.toList();
 	}
 
-	private JsonNode readJson(String fileName) {
-		Resource resource = new ClassPathResource(basePath + fileName);
-		if (!resource.exists()) {
-			log.warn("[AppendixService] 부록 데이터 파일이 없어 건너뜁니다: {}{}", basePath, fileName);
-			return null;
+	public ResponsiveReadingResponse getResponsiveReading(int number) {
+		var entity = responsiveReadingRepository.findById(number)
+				.orElseThrow(() -> AppendixException.responsiveReadingNotFound(number));
+		return new ResponsiveReadingResponse(entity.getNumber(), entity.getTitle(), parseLines(entity.getLinesJson()));
+	}
+
+	private AppendixText findText(String id, java.util.function.Supplier<AppendixException> notFound) {
+		return appendixTextRepository.findById(id).orElseThrow(notFound);
+	}
+
+	private VersionedTextResponse toVersionedText(AppendixText entity) {
+		JsonNode root = objectMapper.readTree(entity.getContentJson());
+		List<TextVersionResponse> versions = new ArrayList<>();
+		for (JsonNode v : root.get("versions")) {
+			versions.add(new TextVersionResponse(text(v, "id"), text(v, "label"), stringList(v.get("lines"))));
 		}
-		try (InputStream in = resource.getInputStream()) {
-			return objectMapper.readTree(in);
-		} catch (IOException e) {
-			log.error("[AppendixService] {} 파일을 읽는 중 오류가 발생했습니다.", fileName, e);
-			return null;
+		return new VersionedTextResponse(entity.getTitle(), versions);
+	}
+
+	private List<ResponsiveReadingLineResponse> parseLines(String linesJson) {
+		List<ResponsiveReadingLineResponse> lines = new ArrayList<>();
+		for (JsonNode l : objectMapper.readTree(linesJson)) {
+			lines.add(new ResponsiveReadingLineResponse(text(l, "speaker"), text(l, "text")));
 		}
+		return lines;
 	}
 
 	private String text(JsonNode obj, String field) {
