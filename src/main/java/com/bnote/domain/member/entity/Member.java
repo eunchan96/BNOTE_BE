@@ -49,6 +49,8 @@ public class Member extends BaseEntity {
 	@Column(name = "department")
 	private String department;
 
+	/** DB 컬럼명은 church_position — "position"은 ANSI SQL 예약어(POSITION 함수)라 컬럼명으로 못 씀 */
+	@Column(name = "church_position")
 	private String position;
 
 	/** 사용자가 직접 업로드한 프로필 사진. profileImageUrl(소셜 제공)과 별개. */

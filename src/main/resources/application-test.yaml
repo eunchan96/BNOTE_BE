@@ -8,9 +8,6 @@ spring:
     hibernate:
       ddl-auto: create-drop
     show-sql: false
-    properties:
-      hibernate:
-        globally_quoted_identifiers: true
 
 jwt:
   secret: test-secret-key-for-jwt-signing-in-tests-only-do-not-use-in-prod
