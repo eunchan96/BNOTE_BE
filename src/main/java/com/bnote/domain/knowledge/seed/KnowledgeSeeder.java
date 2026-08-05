@@ -81,6 +81,7 @@ public class KnowledgeSeeder implements ApplicationRunner {
 
 	@Transactional
 	public void seedIfEmpty() {
+		log.info("[KnowledgeSeeder] ===== 배경지식 허브 시딩 시작 =====");
 		if (bibleFigureRepository.count() == 0) {
 			seedFigures(readArray("bible_figures.json"));
 		}
@@ -105,6 +106,7 @@ public class KnowledgeSeeder implements ApplicationRunner {
 		if (bibleUnitRepository.count() == 0) {
 			seedUnits(readArray("bible_unit.json"));
 		}
+		log.info("[KnowledgeSeeder] ===== 배경지식 허브 시딩 전체 완료 =====");
 	}
 
 	private JsonNode readArray(String fileName) {

@@ -38,6 +38,8 @@ public class BibleSeeder implements ApplicationRunner {
 	/** run()에서 seedIfEmpty()를 호출할 때 self-invocation으로 @Transactional이 무시되는 걸 막기 위한 자기 자신(프록시) 참조 */
 	private final BibleSeeder self;
 
+	private static final int CHUNK_SIZE = 2000;
+
 	public BibleSeeder(
 			BibleVerseRepository bibleVerseRepository,
 			@Value("${bible.seed.path:bible-data/}") String basePath,
@@ -56,14 +58,22 @@ public class BibleSeeder implements ApplicationRunner {
 			log.info("[BibleSeeder] bible.seed.on-startup=false 라서 자동 시딩을 건너뜁니다.");
 			return;
 		}
+		log.info("[BibleSeeder] ===== 성경 시딩 시작 (총 {}개 번역본 확인 예정) =====", Translation.values().length);
 		for (Translation translation : Translation.values()) {
 			self.seedIfEmpty(translation);
 		}
+		log.info("[BibleSeeder] ===== 성경 시딩 전체 완료 =====");
 	}
 
-	@Transactional
+	/**
+	 * 파일을 읽고 파싱하는 건 트랜잭션이 필요 없으니 여기선 그냥 하고,
+	 * 실제 저장만 saveChunk()에서 청크 단위로 나눠서 각각 별도 트랜잭션으로 커밋한다.
+	 * (한 번역본 3만 절을 통째로 한 트랜잭션에 몰아넣으면, Supavisor 같은 커넥션 풀러 너머로
+	 * 그 큰 커밋 한 번이 응답 없이 걸려버리는 경우가 있어서 이렇게 나눴다.)
+	 */
 	void seedIfEmpty(Translation translation) {
 		if (bibleVerseRepository.countByTranslation(translation.getCode()) > 0) {
+			log.info("[BibleSeeder] {} 은(는) 이미 데이터가 있어 건너뜁니다.", translation.getCode());
 			return;
 		}
 
@@ -85,8 +95,18 @@ public class BibleSeeder implements ApplicationRunner {
 				? parseNestedBookFormat(root, translation.getCode())
 				: parseFlatFormat(root, translation.getCode());
 
-		bibleVerseRepository.saveAll(verses);
-		log.info("[BibleSeeder] {} {}개 절 시딩 완료", translation.getCode(), verses.size());
+		int total = verses.size();
+		for (int from = 0; from < total; from += CHUNK_SIZE) {
+			int to = Math.min(from + CHUNK_SIZE, total);
+			self.saveChunk(verses.subList(from, to));
+			log.info("[BibleSeeder] {} {}/{} 절 저장 중...", translation.getCode(), to, total);
+		}
+		log.info("[BibleSeeder] {} {}개 절 시딩 완료", translation.getCode(), total);
+	}
+
+	@Transactional
+	void saveChunk(List<BibleVerse> chunk) {
+		bibleVerseRepository.saveAll(chunk);
 	}
 
 	/** 기존 번역본들(NKRV 등)과 KJV가 쓰는 평평한 구조: 절 하나하나가 book(정수)/chapter/verse를 직접 갖는다. */

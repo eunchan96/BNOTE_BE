@@ -4,7 +4,6 @@ import com.bnote.global.jpa.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -41,8 +40,7 @@ public class WordMemo extends BaseEntity {
 	@Column(name = "end_offset", nullable = false)
 	private Integer endOffset;
 
-	@Lob
-	@Column(nullable = false)
+	@Column(columnDefinition = "text", nullable = false)
 	private String text;
 
 	/** "다른 구절에도 추가"로 복사 생성된 경우, 원본 위치를 표기(예: "창 1:1") */

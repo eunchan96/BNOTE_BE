@@ -5,9 +5,15 @@ spring:
     password: ${SUPABASE_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
+      maximum-pool-size: 5
+      connection-timeout: 10000
+      validation-timeout: 5000
       data-source-properties:
         reWriteBatchedInserts: true
         prepareThreshold: 0
+        connectTimeout: 10
+        socketTimeout: 30
+        loginTimeout: 10
   jpa:
     hibernate:
       ddl-auto: update

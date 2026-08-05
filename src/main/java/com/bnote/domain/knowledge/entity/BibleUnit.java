@@ -3,7 +3,6 @@ package com.bnote.domain.knowledge.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -33,7 +32,7 @@ public class BibleUnit {
 	@Column(nullable = false)
 	private String summary;
 
-	@Lob
+	@Column(columnDefinition = "text")
 	private String description;
 
 	@Column(name = "key_book_id")

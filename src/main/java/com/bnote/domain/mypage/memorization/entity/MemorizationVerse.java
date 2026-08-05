@@ -3,7 +3,6 @@ package com.bnote.domain.mypage.memorization.entity;
 import com.bnote.global.jpa.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -39,8 +38,7 @@ public class MemorizationVerse extends BaseEntity {
 	@Column(name = "end_verse", nullable = false)
 	private Integer endVerse;
 
-	@Lob
-	@Column(name = "verse_text", nullable = false)
+	@Column(name = "verse_text", columnDefinition = "text", nullable = false)
 	private String verseText;
 
 	private String note;

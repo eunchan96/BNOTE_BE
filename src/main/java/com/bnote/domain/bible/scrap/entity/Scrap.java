@@ -3,7 +3,6 @@ package com.bnote.domain.bible.scrap.entity;
 import com.bnote.global.jpa.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -32,8 +31,7 @@ public class Scrap extends BaseEntity {
 	private Integer endVerse;
 
 	/** 스크랩 당시 본문. 이후 번역본/원문이 바뀌어도 스크랩한 순간의 텍스트를 그대로 보존한다. */
-	@Lob
-	@Column(name = "verse_text", nullable = false)
+	@Column(name = "verse_text", columnDefinition = "text", nullable = false)
 	private String verseText;
 
 	@Builder

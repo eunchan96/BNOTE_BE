@@ -69,8 +69,11 @@ public class HymnSeeder implements ApplicationRunner {
 	@Transactional
 	public void seedIfEmpty() {
 		if (hymnRepository.count() > 0) {
+			log.info("[HymnSeeder] 이미 찬송가 데이터가 있어 건너뜁니다.");
 			return;
 		}
+
+		log.info("[HymnSeeder] ===== 찬송가 시딩 시작 =====");
 
 		Resource resource = new ClassPathResource(basePath + fileName);
 		if (!resource.exists()) {
@@ -91,6 +94,7 @@ public class HymnSeeder implements ApplicationRunner {
 		int hymnCount = seedHymns(root.get("hymns"), minorIdMap);
 
 		log.info("[HymnSeeder] 대분류 {}개, 소분류 {}개, 찬송가 {}개 시딩 완료", majorIdMap.size(), minorIdMap.size(), hymnCount);
+		log.info("[HymnSeeder] ===== 찬송가 시딩 전체 완료 =====");
 	}
 
 	private Map<Long, Long> seedMajorCategories(JsonNode majorArray) {
