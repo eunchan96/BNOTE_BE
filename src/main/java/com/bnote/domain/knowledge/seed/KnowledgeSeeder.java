@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -37,6 +38,7 @@ public class KnowledgeSeeder implements ApplicationRunner {
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	private final String basePath;
 	private final boolean seedOnStartup;
+	private final KnowledgeSeeder self;
 
 	public KnowledgeSeeder(
 			BibleFigureRepository bibleFigureRepository,
@@ -50,7 +52,8 @@ public class KnowledgeSeeder implements ApplicationRunner {
 			TopicalVerseRefRepository topicalVerseRefRepository,
 			BibleUnitRepository bibleUnitRepository,
 			@Value("${knowledge.seed.path:knowledge-data/}") String basePath,
-			@Value("${knowledge.seed.on-startup:true}") boolean seedOnStartup
+			@Value("${knowledge.seed.on-startup:true}") boolean seedOnStartup,
+			@Lazy KnowledgeSeeder self
 	) {
 		this.bibleFigureRepository = bibleFigureRepository;
 		this.biblePlaceRepository = biblePlaceRepository;
@@ -64,6 +67,7 @@ public class KnowledgeSeeder implements ApplicationRunner {
 		this.bibleUnitRepository = bibleUnitRepository;
 		this.basePath = basePath;
 		this.seedOnStartup = seedOnStartup;
+		this.self = self;
 	}
 
 	@Override
@@ -72,7 +76,7 @@ public class KnowledgeSeeder implements ApplicationRunner {
 			log.info("[KnowledgeSeeder] knowledge.seed.on-startup=false 라서 자동 시딩을 건너뜁니다.");
 			return;
 		}
-		seedIfEmpty();
+		self.seedIfEmpty();
 	}
 
 	@Transactional

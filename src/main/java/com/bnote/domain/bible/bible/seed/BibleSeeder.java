@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -34,15 +35,19 @@ public class BibleSeeder implements ApplicationRunner {
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	private final String basePath;
 	private final boolean seedOnStartup;
+	/** run()에서 seedIfEmpty()를 호출할 때 self-invocation으로 @Transactional이 무시되는 걸 막기 위한 자기 자신(프록시) 참조 */
+	private final BibleSeeder self;
 
 	public BibleSeeder(
 			BibleVerseRepository bibleVerseRepository,
 			@Value("${bible.seed.path:bible-data/}") String basePath,
-			@Value("${bible.seed.on-startup:true}") boolean seedOnStartup
+			@Value("${bible.seed.on-startup:true}") boolean seedOnStartup,
+			@Lazy BibleSeeder self
 	) {
 		this.bibleVerseRepository = bibleVerseRepository;
 		this.basePath = basePath;
 		this.seedOnStartup = seedOnStartup;
+		this.self = self;
 	}
 
 	@Override
@@ -52,7 +57,7 @@ public class BibleSeeder implements ApplicationRunner {
 			return;
 		}
 		for (Translation translation : Translation.values()) {
-			seedIfEmpty(translation);
+			self.seedIfEmpty(translation);
 		}
 	}
 
