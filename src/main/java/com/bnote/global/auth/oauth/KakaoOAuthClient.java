@@ -3,15 +3,18 @@ package com.bnote.global.auth.oauth;
 import com.bnote.domain.member.entity.SocialType;
 import com.bnote.domain.member.exception.MemberException;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientResponseException;
 
 import java.util.Map;
 
+@Slf4j
 @Component
 public class KakaoOAuthClient implements OAuthClient {
 
@@ -22,6 +25,9 @@ public class KakaoOAuthClient implements OAuthClient {
 
 	@Value("${oauth.kakao.client-id}")
 	private String clientId;
+
+	@Value("${oauth.kakao.client-secret:}")
+	private String clientSecret;
 
 	@Value("${oauth.kakao.redirect-uri}")
 	private String redirectUri;
@@ -43,13 +49,22 @@ public class KakaoOAuthClient implements OAuthClient {
 		body.add("client_id", clientId);
 		body.add("redirect_uri", redirectUri);
 		body.add("code", authCode);
+		if (clientSecret != null && !clientSecret.isBlank()) {
+			body.add("client_secret", clientSecret);
+		}
 
-		KakaoTokenResponse response = restClient.post()
-				.uri(TOKEN_URI)
-				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-				.body(body)
-				.retrieve()
-				.body(KakaoTokenResponse.class);
+		KakaoTokenResponse response;
+		try {
+			response = restClient.post()
+					.uri(TOKEN_URI)
+					.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+					.body(body)
+					.retrieve()
+					.body(KakaoTokenResponse.class);
+		} catch (RestClientResponseException e) {
+			log.error("[KakaoOAuthClient] 토큰 발급 실패: status={}, body={}", e.getStatusCode(), e.getResponseBodyAsString());
+			throw MemberException.oauthFailed("카카오 토큰 발급에 실패했습니다: " + e.getResponseBodyAsString());
+		}
 
 		if (response == null || response.accessToken() == null) {
 			throw MemberException.oauthFailed("카카오 토큰 발급에 실패했습니다.");
