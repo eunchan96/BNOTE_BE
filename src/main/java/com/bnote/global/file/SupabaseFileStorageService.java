@@ -11,6 +11,7 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.UUID;
 
 /**
@@ -29,9 +30,9 @@ public class SupabaseFileStorageService implements FileStorageService {
 	private final String serviceRoleKey;
 
 	public SupabaseFileStorageService(
-		@Value("${supabase.storage.url}") String storageUrl,
-		@Value("${supabase.storage.bucket}") String bucket,
-		@Value("${supabase.storage.service-role-key}") String serviceRoleKey
+			@Value("${supabase.storage.url}") String storageUrl,
+			@Value("${supabase.storage.bucket}") String bucket,
+			@Value("${supabase.storage.service-role-key}") String serviceRoleKey
 	) {
 		this.storageUrl = storageUrl;
 		this.bucket = bucket;
@@ -47,14 +48,16 @@ public class SupabaseFileStorageService implements FileStorageService {
 		String extension = extractExtension(file.getOriginalFilename());
 		String objectPath = subDirectory + "/" + UUID.randomUUID() + extension;
 
+		String targetUrl = storageUrl + "/object/" + bucket + "/" + objectPath;
+
 		try {
 			restClient.post()
-				.uri("{base}/object/{bucket}/{path}", storageUrl, bucket, objectPath)
-				.header(HttpHeaders.AUTHORIZATION, "Bearer " + serviceRoleKey)
-				.contentType(resolveMediaType(file))
-				.body(file.getBytes())
-				.retrieve()
-				.toBodilessEntity();
+					.uri(URI.create(targetUrl))
+					.header(HttpHeaders.AUTHORIZATION, "Bearer " + serviceRoleKey)
+					.contentType(resolveMediaType(file))
+					.body(file.getBytes())
+					.retrieve()
+					.toBodilessEntity();
 		} catch (IOException e) {
 			throw new ServiceException(RsStatus.INTERNAL_SERVER_ERROR.getResultCode(), "파일 업로드에 실패했습니다.");
 		}
