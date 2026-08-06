@@ -8,6 +8,7 @@ import com.bnote.global.response.RsData;
 import com.bnote.global.rq.Rq;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -48,7 +49,7 @@ public class SermonController implements SermonControllerDocs {
 		return RsData.ok("설교노트 삭제 성공");
 	}
 
-	@PostMapping("/{id}/photos")
+	@PostMapping(value = "/{id}/photos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public RsData<SermonPhotoResponse> addPhoto(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
 		SermonPhotoResponse response = sermonFacade.addPhoto(rq.getActorIdOrThrow(), id, file);
 		return RsData.created("설교노트 사진 업로드 성공", response);

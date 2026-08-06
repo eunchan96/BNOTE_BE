@@ -7,6 +7,7 @@ import com.bnote.global.response.RsData;
 import com.bnote.global.rq.Rq;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -32,7 +33,7 @@ public class ProfileController implements ProfileControllerDocs {
 		return RsData.ok("프로필 수정 성공", profileFacade.updateProfile(rq.getActorIdOrThrow(), request));
 	}
 
-	@PostMapping("/photo")
+	@PostMapping(value = "/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public RsData<ProfileResponse> updatePhoto(@RequestParam("file") MultipartFile file) {
 		return RsData.ok("프로필 사진 변경 성공", profileFacade.updatePhoto(rq.getActorIdOrThrow(), file));
 	}
